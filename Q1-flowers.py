@@ -2,7 +2,7 @@ import skimage
 import numpy as np
 import matplotlib.pyplot as plt
 from skimage.restoration import denoise_tv_chambolle
-from skimage.morphology import binary_closing, binary_opening, disk
+from skimage.morphology import binary_closing, remove_small_objects, disk
 from skimage.color import rgb2lab
 from sklearn.cluster import KMeans
 
@@ -42,6 +42,7 @@ plt.title('Denoised image')
 plt.tight_layout()
 plt.savefig('figures/denoised_comparison.png')
 
+# Convert from RGB to LAB color space for better clustering
 flowers_lab = rgb2lab(flowers_denoised)
 flowers_noisy_lab = rgb2lab(flowers)
 
@@ -80,19 +81,27 @@ plt.savefig('figures/purple_cluster.png')
 
 # Further denoise the cluster by performing binary closing followed by
 # binary opening
-purple_mask_closed = binary_closing(denoised_labels == 2,
-                                    disk(1))
-plt.figure(figsize=(5, 4))
+purple_mask_closed = binary_closing(denoised_labels == purple_cluster_denoised,
+                                    disk(2))
+purple_mask_opened = remove_small_objects(purple_mask_closed, min_size=150)
+plt.figure(figsize=(10, 4))
+plt.subplot(1, 2, 1)
 plt.imshow(purple_mask_closed, cmap='gray')
 plt.axis('off')
 plt.title('Purple cluster after binary closing')
-plt.tight_layout()
-plt.savefig('figures/closed_purple_mask.png')
-
-purple_mask_opened = binary_opening(purple_mask_closed, disk(2))
-plt.figure(figsize=(5, 4))
+plt.subplot(1, 2, 2)
 plt.imshow(purple_mask_opened, cmap='gray')
 plt.axis('off')
-plt.title('Purple cluster after binary closing and opening')
+plt.title('Purple cluster after binary closing and removal of small objects')
 plt.tight_layout()
-plt.savefig('figures/opened_purple_mask.png')
+plt.savefig('figures/morphological_operations.png')
+
+# Plot the original image with the purple cluster highlighted
+plt.figure(figsize=(5, 4))
+plt.imshow(flowers)
+# Highlight the purple cluster
+plt.imshow(purple_mask_opened, cmap='RdPu', alpha=0.5)
+plt.axis('off')
+plt.title('Purple cluster in original image')
+plt.tight_layout()
+plt.savefig('figures/purple_cluster_original.png')
