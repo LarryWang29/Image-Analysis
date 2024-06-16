@@ -2,7 +2,9 @@ import skimage
 import matplotlib.pyplot as plt
 import numpy as np
 from skimage.restoration import inpaint
-from skimage.morphology import binary_closing, disk, remove_small_holes
+from skimage.segmentation import watershed
+from skimage.filters import sobel
+from skimage.morphology import closing, disk
 from skimage.morphology import label
 from skimage.measure import regionprops
 
@@ -26,31 +28,36 @@ plt.title('Impainted Image')
 plt.tight_layout()
 plt.savefig('figures/coins_original+inpaint.png')
 
-# Use thresholding to segment the image
-binary = coins_inpainted > 0.5
+# Calculate the elevation
+elevation_map = sobel(coins_inpainted)
 
-# Use Binary Closing to fill in the holes
-closed = binary_closing(binary, disk(3))
-closed = remove_small_holes(closed, 200)
+# Compute the markers
+markers = np.zeros_like(coins_inpainted)
+markers[coins_inpainted < 0.1] = 1
+markers[coins_inpainted > 0.6] = 2
+
+# Apply the watershed algorithm
+segmentation = watershed(elevation_map, markers)
+
+# Minus 1 to convert back from [1, 2] to [0, 1]
+segmentation -= 1
+
+# Use closing to fill in the holes
+closed = closing(segmentation, disk(3))
+
+# Segment based on connectivity
 label_image = label(closed)
 regions = regionprops(label_image)
 
 plt.figure(figsize=(15, 5))
 plt.subplot(1, 3, 1)
-plt.imshow(binary, cmap='gray')
-plt.title('Image after thresholding')
+plt.imshow(segmentation, cmap='gray')
+plt.title('Image after watershedding')
 plt.axis('off')
 plt.subplot(1, 3, 2)
 plt.imshow(closed, cmap='gray')
-plt.title('Image after closing and removing small holes')
+plt.title('Image after closing')
 plt.axis('off')
-
-# delete non-circular regions
-deleted = []
-for lb in range(len(regions)):
-    if regions[lb].eccentricity > 0.5:
-        label_image[label_image == lb+1] = 0
-        deleted.append(lb)
 
 # Delete small regions that are not coins
 filtered_image = np.zeros_like(label_image)
@@ -93,5 +100,13 @@ segmented_coins = coins*((label_image == sorted_regions[0].label) +
                          (label_image == sorted_regions[21].label))
 
 plt.figure(figsize=(10, 5))
+plt.subplot(1, 2, 1)
+plt.imshow(coins, cmap='gray')
+plt.axis('off')
+plt.title('Original image')
+plt.subplot(1, 2, 2)
 plt.imshow(segmented_coins, cmap='gray')
 plt.axis('off')
+plt.title('Segmented coins highlighted in original image')
+plt.tight_layout()
+plt.savefig('figures/coins_segmented.png')
