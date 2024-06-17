@@ -7,6 +7,19 @@ from skimage.filters import sobel
 from skimage.morphology import closing, disk
 from skimage.morphology import label
 from skimage.measure import regionprops
+from mpl_toolkits.axes_grid1.inset_locator import zoomed_inset_axes, mark_inset
+
+
+def add_zoomed_inset(ax, image, zoom_factor, x1, x2, y1, y2,
+                     loc='upper right'):
+    inset_ax = zoomed_inset_axes(ax, zoom_factor, loc=loc)
+    inset_ax.imshow(image, cmap='gray')
+    # inset_ax.imshow(image, vmin=0, vmax=1)
+    inset_ax.set_xlim(x1, x2)
+    inset_ax.set_ylim(y2, y1)
+    inset_ax.set_xticks([])
+    inset_ax.set_yticks([])
+    mark_inset(ax, inset_ax, loc1=3, loc2=4, fc="none", ec="red")
 
 
 # Read in the corrupted coins image
@@ -54,6 +67,14 @@ plt.subplot(1, 3, 1)
 plt.imshow(segmentation, cmap='gray')
 plt.title('Image after watershedding')
 plt.axis('off')
+# Create a box around the 16th region
+y1, x1, y2, x2 = regions[15].bbox
+plt.gca().add_patch(plt.Rectangle((x1, y1), x2-x1, y2-y1, fill=False,
+                                  edgecolor='red', lw=2))
+# Create a zoomed inset at the 7th region
+y1, x1, y2, x2 = regions[6].bbox
+add_zoomed_inset(plt.gca(), segmentation, 10, x1-2, x2+2, y1-2, y2+2,
+                 loc='lower left')
 plt.subplot(1, 3, 2)
 plt.imshow(closed, cmap='gray')
 plt.title('Image after closing')
@@ -75,6 +96,10 @@ plt.imshow(filtered_image, cmap='nipy_spectral')
 plt.title('Labelled regions (as highlighted) after removal' +
           "\nof small/non-circular regions")
 plt.axis('off')
+# Create a zoomed inset at the 7th region
+y1, x1, y2, x2 = regions[6].bbox
+add_zoomed_inset(plt.gca(), filtered_image, 10, x1-2, x2+2, y1-2, y2+2,
+                 loc='lower left')
 plt.tight_layout()
 plt.savefig('figures/coins_labelled_regions.png')
 
