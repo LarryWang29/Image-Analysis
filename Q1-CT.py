@@ -45,6 +45,14 @@ def otsu_threshold(image):
     # class
     return best_bin - 1
 
+plt.figure(figsize=(8, 5))
+plt.hist(ct.ravel(), bins=256, range=(0, 256), density=True)
+plt.xlabel('Pixel intensity')
+plt.ylabel('Frequency')
+plt.title('Histogram of pixel intensities')
+plt.tight_layout()
+plt.savefig("figures/CT_histogram.png")
+
 ct_thresh = ct <= otsu_threshold(ct)
 
 # Apply morphological operation to the thresholded image to smooth out internal
