@@ -118,7 +118,7 @@ def iterative_solution(y, niter=100, L=0.1):
     return s_hat[:100]
 
 lambdas = [0.01, 0.025, 0.05, 0.1, 0.2]
-plt.figure(figsize=(20, 10))
+plt.figure(figsize=(20, 20))
 current_plot = 1
 
 for lam in lambdas:

@@ -124,14 +124,10 @@ segmented_coins = coins*((label_image == sorted_regions[0].label) +
                          (label_image == sorted_regions[14].label) +
                          (label_image == sorted_regions[21].label))
 
-plt.figure(figsize=(10, 5))
-plt.subplot(1, 2, 1)
+plt.figure(figsize=(6, 5))
 plt.imshow(coins, cmap='gray')
 plt.axis('off')
-plt.title('Original image')
-plt.subplot(1, 2, 2)
-plt.imshow(segmented_coins, cmap='gray')
-plt.axis('off')
-plt.title('Segmented coins highlighted in original image')
+plt.imshow(segmented_coins, cmap='inferno', alpha=0.3)
+plt.title('Segmented coins overlaid on original image')
 plt.tight_layout()
-plt.savefig('figures/coins_segmented.png')
+plt.savefig('figures/coins_segmented_overlay.png')
