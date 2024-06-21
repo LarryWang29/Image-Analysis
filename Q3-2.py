@@ -81,18 +81,22 @@ x_admm_odl = L.domain.zero()
 # Run the algorithm
 odl.solvers.admm_linearized(x_admm_odl, f, g, L, tau, sigma,
                             niter, callback=None)
+
+# Total variation reconstruction solution
 x_admm_np = x_admm_odl.__array__()
 
 
 psnr_tv = compare_psnr(phantom_np, x_admm_np, data_range=data_range)
 ssim_tv = compare_ssim(phantom_np, x_admm_np, data_range=data_range)
 
-# Let's compute a reasonable initial value for the step-size 
-# as step_size = 1/L, where L is the spectral norm of the forward operator.
+# Using power method to estimate the operator norm for A, then using
+# 1.1/A as the step size for the LGD network to ensure numerical stability
 op_norm = 1.1 * odl.power_method_opnorm(fwd_op_odl)
 step_size = 1 / op_norm
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+
+# Convert the ODL operators to PyTorch operators
 fbp_op = odl_torch.OperatorModule(fbp_op_odl).to(device)
 fwd_op = odl_torch.OperatorModule(fwd_op_odl).to(device)
 adj_op = odl_torch.OperatorModule(adj_op_odl).to(device)
