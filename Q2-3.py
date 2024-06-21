@@ -37,7 +37,7 @@ Wim = helper.dwt2(img)
 
 # Visualise the coefficients in the wavelet domain
 plt.figure(figsize=(10, 7.5))
-plt.imshow(np.abs(Wim) > 0.05, cmap='gray')
+plt.imshow(np.abs(Wim) > 0.01, cmap='gray')
 plt.axis('off')
 plt.tight_layout()
 plt.savefig('figures/wavelet_riverside.png')
@@ -64,6 +64,23 @@ plt.tight_layout()
 plt.savefig('figures/diff_riverside.png')
 
 Wim = helper.dwt2(img)
+
+# Create a comparative plot to show the wavelet coefficients after retaining
+# only the 15% largest coefficients
+plt.figure(figsize=(10, 5))
+thresh_15 = np.percentile(np.abs(Wim).flatten(), 100 - 0.15 * 100)
+Wim_thresh = Wim * (np.abs(Wim) > thresh_15)
+plt.subplot(1, 2, 1)
+plt.imshow(np.abs(Wim) > 0.01, cmap='gray')
+plt.axis('off')
+plt.title('Wavelet coefficients')
+plt.subplot(1, 2, 2)
+plt.imshow(np.abs(Wim_thresh) > 0.01, cmap='gray')
+plt.axis('off')
+plt.title('Wavelet coefficients with 15% threshold')
+plt.tight_layout()
+plt.savefig('figures/wavelet_coeffs_thresholded.png')
+
 # Only keep the 20% largest coefficients
 thresholds = [0.2, 0.1, 0.05, 0.025]
 thresh_20 = np.percentile(np.abs(Wim).flatten(), 100 - thresholds[0] * 100)
@@ -86,22 +103,6 @@ plt.title('Histogram of wavelet coefficients')
 plt.legend()
 plt.tight_layout()
 plt.savefig('figures/wavelet_coeffs_histogram.png')
-
-# Create a comparative plot to show the wavelet coefficients after retaining
-# only the 15% largest coefficients
-plt.figure(figsize=(10, 5))
-thresh_15 = np.percentile(np.abs(Wim).flatten(), 100 - 0.15 * 100)
-Wim_thresh = Wim * (np.abs(Wim) > thresh_15)
-plt.subplot(1, 2, 1)
-plt.imshow(np.abs(Wim) > 0.01, cmap='gray')
-plt.axis('off')
-plt.title('Wavelet coefficients')
-plt.subplot(1, 2, 2)
-plt.imshow(np.abs(Wim_thresh) > 0.01, cmap='gray')
-plt.axis('off')
-plt.title('Wavelet coefficients with 15% threshold')
-plt.tight_layout()
-plt.savefig('figures/wavelet_coeffs_thresholded.png')
 
 
 # Now reconstruct the image using the thresholded coefficients

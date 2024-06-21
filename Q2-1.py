@@ -10,16 +10,34 @@ x = np.arange(0, 20, 1)
 
 
 def L1_objective_function(m, x, y):
+    """
+    This function computes the L1 objective function for linear regression.
+    The function is used for part 1 of Question 2.
+
+    Parameters  
+    ----------
+    m : list
+        A list containing the slope and intercept of the line.
+    x : numpy.ndarray
+        The x-values of the data points.
+    y : numpy.ndarray   
+        The y-values of the data points.
+    """
     a, b = m
     return np.sum(np.abs(y - (a * x + b)))
 
 
 def L2_objective_function(m, x, y):
+    """
+    This function computes the L2 objective function for linear regression.
+    Note that not square rooting doesn't affect the optimal solution.
+    The function used for part 1 of Question 2.
+    """
     a, b = m
     return np.sum((y - (a * x + b))**2)
 
 
-# Fit the line to the data
+# Fit the L1 line to the data
 initial_guess = [1, 1]
 result = scipy.optimize.minimize(L1_objective_function, initial_guess,
                                  args=(x, y_line))
@@ -31,7 +49,7 @@ print("The fitted coefficients for L1 minimisation with noisy data \
        are a = {:.3f} and b = {:.3f}".format(a_opt_l1_noisy, b_opt_l1_noisy))
 
 
-# Fit the line to the outlier data
+# Fit the L1 line to the outlier data
 initial_guess = [1, 1]
 result = scipy.optimize.minimize(L1_objective_function, initial_guess,
                                  args=(x, y_outlier_line))
@@ -44,7 +62,7 @@ print("The fitted coefficients for L1 minimisation with outlier data \
                                                b_opt_l1_outlier))
 
 
-# Fit the line to the data
+# Fit the L2 line to the data
 initial_guess = [1, 1]
 result = scipy.optimize.minimize(L2_objective_function, initial_guess,
                                  args=(x, y_line))
@@ -57,7 +75,7 @@ print("The fitted coefficients for L2 minimisation with noisy data \
                                                   b_opt_l2_noisy))
 
 
-# Fit the line to the outlier data
+# Fit the L2 line to the outlier data
 initial_guess = [1, 1]
 result = scipy.optimize.minimize(L2_objective_function, initial_guess,
                                  args=(x, y_outlier_line))
@@ -69,7 +87,7 @@ print("The fitted coefficients for L2 minimisation with outlier data \
             are a = {:.3f} and b = {:.3f}".format(a_opt_l2_outlier,
                                                   b_opt_l2_outlier))
 
-# Plot the data and the fitted line
+# Plot the data and the fitted lines
 plt.figure(figsize=(10, 5))
 plt.subplot(1, 2, 1)
 plt.scatter(x, y_line, label='Data')

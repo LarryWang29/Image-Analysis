@@ -30,9 +30,37 @@ plt.savefig('figures/original+noisy_signals.png')
 
 # Define the 1D FFT functions (Adapted from fft functions in helper.py)
 def fftc(x):
+    """
+    This function computes the centered 1D FFT of the input signal x, used
+    for the part 2 of Question 2.
+
+    Parameters
+    ----------
+    x : numpy.ndarray
+        The input signal to be transformed.
+
+    Returns
+    -------
+    numpy.ndarray
+        The centered 1D FFT of the input signal.
+    """
     return 1 / np.sqrt(np.prod(x.shape)) * np.fft.fftshift(np.fft.fft(np.fft.ifftshift(x)))
 
 def ifftc(y):
+    """
+    This function computes the inverse centered 1D FFT of the input signal y,
+    used for the part 2 of Question 2.
+
+    Parameters
+    ----------
+    y : numpy.ndarray
+        The input signal to be transformed.
+    
+    Returns
+    -------
+    numpy.ndarray
+        The inverse centered 1D FFT of the input signal.
+    """
     return np.sqrt(np.prod(y.shape)) * np.fft.ifftshift(np.fft.ifft(np.fft.fftshift(y)))
 
 # Pad the noisy signal with zeros to length 128 so that it's a power of 2
@@ -72,6 +100,7 @@ x_uniform = ifftc(uniform_fourier)
 x_random *= 4
 x_uniform *= 4
 
+# Take the first 100 samples since the last 28 are just padding
 x_random = x_random[:100]
 x_uniform = x_uniform[:100]
 
@@ -103,8 +132,10 @@ def iterative_solution(y, niter=100, L=0.1):
     # Initialize x_hat to be the reconstruction from the inverse FFT
     X_hat = deepcopy(y)
 
+    # Find the indices where the original signal is not 0 for consistency
+    # checking
     idx = np.argwhere(y != 0)
-    # Iterate
+
     for _ in range(niter):
         # Take the inverse FFT
         s_approx = ifftc(X_hat)
@@ -113,37 +144,36 @@ def iterative_solution(y, niter=100, L=0.1):
         # Take the FFT
         X_hat_new = fftc(s_hat)
         # If the original y is not 0, then reset the values of X_hat_new to be the original y
+        # to ensure consistency
         X_hat_new[idx] = y[idx]
         X_hat = X_hat_new
     return s_hat[:100]
 
-lambdas = [0.01, 0.025, 0.05, 0.1, 0.2]
+lambdas = [0.01, 0.05, 0.1]
 plt.figure(figsize=(20, 20))
 current_plot = 1
 
 for lam in lambdas:
+    # Calculate the solutions for this lambda
     x_solution_uniform = iterative_solution(uniform_fourier, L=lam)
     x_solution_random = iterative_solution(random_fourier, L=lam)
-    print("Reconstruction error from Random Undersampling is " + 
-          f"{np.linalg.norm(x - x_solution_random)}")
-    print("Reconstruction error from Uniform Undersampling is " + 
-          f"{np.linalg.norm(x - x_solution_uniform)}")
-    if lam == 0.01 or lam == 0.05 or lam == 0.1:
-        plt.subplot(3, 2, current_plot)
-        plt.stem(x_solution_random, linefmt='b--')
-        plt.stem(x, linefmt='g--')
-        plt.title(rf'Comparison of randomly undersampling solution and original signal, $\lambda={lam}$')
-        legend_elements = [Line2D([0], [0], color='b', lw=2, linestyle='--', label='Iterative Solution'),
-                        Line2D([0], [0], color='g', lw=2, linestyle='--', label='Original Signal')]
-        plt.legend(handles=legend_elements)
-        plt.subplot(3, 2, current_plot + 1)
-        plt.stem(x_solution_uniform, linefmt='b--')
-        plt.stem(x, linefmt='g--')
-        plt.title(rf'Comparison of uniform undersampling solution and original signal, $\lambda={lam}$')
-        legend_elements = [Line2D([0], [0], color='b', lw=2, linestyle='--', label='Iterative Solution'),
-                        Line2D([0], [0], color='g', lw=2, linestyle='--', label='Original Signal')]
-        plt.legend(handles=legend_elements)
-        current_plot += 2
+    plt.subplot(3, 2, current_plot)
+    plt.stem(x_solution_random, linefmt='b--')
+    plt.stem(x, linefmt='g--')
+    plt.title(rf'Comparison of randomly undersampling solution and original signal, $\lambda={lam}, $' +
+              f'MSE={np.linalg.norm(x - x_solution_random).round(3)}')
+    legend_elements = [Line2D([0], [0], color='b', lw=2, linestyle='--', label='Iterative Solution'),
+                    Line2D([0], [0], color='g', lw=2, linestyle='--', label='Original Signal')]
+    plt.legend(handles=legend_elements)
+    plt.subplot(3, 2, current_plot + 1)
+    plt.stem(x_solution_uniform, linefmt='b--')
+    plt.stem(x, linefmt='g--')
+    plt.title(rf'Comparison of uniform undersampling solution and original signal, $\lambda={lam}, $' +
+              f'MSE={np.linalg.norm(x - x_solution_uniform).round(3)}')
+    legend_elements = [Line2D([0], [0], color='b', lw=2, linestyle='--', label='Iterative Solution'),
+                    Line2D([0], [0], color='g', lw=2, linestyle='--', label='Original Signal')]
+    plt.legend(handles=legend_elements)
+    current_plot += 2
 
 plt.tight_layout()
 plt.savefig('figures/solution_comparison.png')

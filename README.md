@@ -27,9 +27,9 @@ All results and figures included in the report can be reproduced by running rele
 - `Q2-2.py` produces results and figures used for part 2 of Question 2.
 - `Q2-3.py` produces results and figures used for part 3 of Question 2.
 - `Q3-1.py` contains script used for Gradient Descent used in part 1 of Question 3.
-- `Q3-2.py` contains script used for training the Learned Gradient Desceent network, as well as script used for evaluation of other benchmarking methods, such as FBP and TV. The implementation of the `torch.nn` models are migrated to the file `LGD_models.py`; this file contains the completed implementations of `prox_net` and `LGD_net`.
+- `Q3-2.py` contains script used for training the Learned Gradient Desceent network, as well as script used for evaluation of other benchmarking methods, such as FBP and TV. The completed implementations of the networks are migrated to the file `LGD_models.py`; this file contains the completed implementations of `prox_net` and `LGD_net`. The completed training scripts for the network is included in `Q3-2.py`.
 
-To run the script, simply run the desired file in command line:
+To run scripts, simply run the desired file in command line:
 
 ```{Python}
 python Q1-coins.py # This will generate all figures used in the coins segmentation in Question 1
@@ -51,7 +51,7 @@ Docker run --rm -ti m2
 This would start the process inside the container.
 
 ## Hardware Specifications
-All scripts should be runnable on most machines; pytorch CUDA may be required for Part 2 of Question 3.
+All scripts should be runnable on most machines in less than 1 minutes; `Q3-2.py` may take slightly longer as a network is trained.
 
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first

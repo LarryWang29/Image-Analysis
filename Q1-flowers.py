@@ -8,6 +8,23 @@ from sklearn.cluster import KMeans
 
 
 def find_purple_cluster(kmeans_cluster):
+    """
+    This function finds the cluster closest to the purple lab color in the
+    KMeans cluster object. This is used for the flower segmentation section
+    of Question 1.
+
+    Parameters
+    ----------
+    kmeans_cluster : sklearn.cluster.KMeans
+        The KMeans cluster object containing the cluster centers.
+    
+    Returns
+    -------
+    purple_cluster : int
+        The index of the cluster closest to the purple lab color.
+    """
+    # Purple color in LAB space 
+    # (from https://convertingcolors.com/cielab-color-45.36_78.75_-77.41.html)
     purple_lab = np.array([45.36, 78.75, -77.41])
     distances = np.sum((kmeans_cluster.cluster_centers_ - purple_lab) ** 2,
                        axis=1)
@@ -19,7 +36,6 @@ def find_purple_cluster(kmeans_cluster):
 
 # Read the images
 flowers = skimage.io.imread('data/noisy_flower.jpg')[:, :, :3]
-flowers_gray = skimage.io.imread('data/noisy_flower.jpg', as_gray=True)
 
 # Denoise using Total Variation filter
 flowers_denoised = denoise_tv_chambolle(flowers, weight=0.1)
@@ -46,6 +62,7 @@ plt.savefig('figures/denoised_comparison.png')
 flowers_lab = rgb2lab(flowers_denoised)
 flowers_noisy_lab = rgb2lab(flowers)
 
+# Perform KMeans clustering on the denoised and noisy images
 kmeans_denoised = KMeans(n_clusters=5,
                          random_state=0,
                          n_init=25).fit(flowers_lab.reshape(-1, 3))
@@ -58,6 +75,7 @@ kmeans_noisy = KMeans(n_clusters=5,
 purple_cluster_denoised = find_purple_cluster(kmeans_denoised)
 purple_cluster_noisy = find_purple_cluster(kmeans_noisy)
 
+# Reshape the labels to the original image shape
 denoised_labels = kmeans_denoised.labels_.reshape(666, 1000)
 noisy_labels = kmeans_noisy.labels_.reshape(666, 1000)
 

@@ -12,6 +12,22 @@ ct = (ct * 255).astype(np.uint8)
 
 # Custom Otsu thresholding function
 def otsu_threshold(image):
+    """
+    This is a custom implementation of Otsu's thresholding algorithm. It
+    computes the optimal threshold value for binarising an image based on the
+    intra-class variance of pixel intensities. This is used for the
+    lung segmentation section of Question 1.
+
+    Parameters
+    ----------
+    image : numpy.ndarray
+        The input image to be thresholded.
+    
+    Returns
+    -------
+    int
+        The optimal threshold value for binarising the image.
+    """
     # Compute histogram
     hist = np.histogram(image, bins=256, range=(0, 256), density=True)[0]
     best_thresh = np.inf
@@ -20,7 +36,7 @@ def otsu_threshold(image):
         # Compute class probabilities
         w0 = np.sum(hist[:bins])
         w1 = np.sum(hist[bins:])
-        # Compute class means
+        # Compute class means and variances
         if w0 != 0:
             mu0 = np.sum([i * hist[i] for i in range(bins)]) / w0
             sigma0 = np.sum([(i - mu0) ** 2 * hist[i] for i in range(bins)]) / w0
@@ -34,9 +50,9 @@ def otsu_threshold(image):
             mu1 = 0
             sigma1 = 0
         
-        # Compute within-class variance
+        # Compute intra-class variance
         sigma_w = w0 * sigma0 + w1 * sigma1
-        # Update threshold if within-class variance is lower
+        # Update threshold if intra-class variance is lower
         if sigma_w < best_thresh:
             best_thresh = sigma_w
             best_bin = bins

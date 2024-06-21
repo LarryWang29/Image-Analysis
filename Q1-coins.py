@@ -12,6 +12,36 @@ from mpl_toolkits.axes_grid1.inset_locator import zoomed_inset_axes, mark_inset
 
 def add_zoomed_inset(ax, image, zoom_factor, x1, x2, y1, y2,
                      loc='upper right'):
+    """
+    This function adds a zoomed inset of the image to the axes ax 
+    at a specified location loc. The zoomed inset is a zoom_factor
+    times zoomed in version of the image between the coordinates
+    (x1, y1) and (x2, y2). This is used for coin segmentation section
+    of Question 1.
+
+    Parameters
+    ----------
+    ax : matplotlib.axes.Axes
+        The axes to which the zoomed inset should be added.
+    image : numpy.ndarray
+        The image to be zoomed in.
+    zoom_factor : float
+        The factor by which the image should be zoomed in.
+    x1 : int
+        The x-coordinate of the top-left corner of the zoomed inset.
+    x2 : int
+        The x-coordinate of the bottom-right corner of the zoomed inset.
+    y1 : int
+        The y-coordinate of the top-left corner of the zoomed inset.
+    y2 : int
+        The y-coordinate of the bottom-right corner of the zoomed inset.
+    loc : str, optional
+        The location of the zoomed inset in the parent axes.
+
+    Returns
+    -------
+    None
+    """
     inset_ax = zoomed_inset_axes(ax, zoom_factor, loc=loc)
     inset_ax.imshow(image, cmap='gray')
     # inset_ax.imshow(image, vmin=0, vmax=1)
@@ -25,7 +55,8 @@ def add_zoomed_inset(ax, image, zoom_factor, x1, x2, y1, y2,
 # Read in the corrupted coins image
 coins = skimage.io.imread('data/coins.png', as_gray=True)
 
-# Use impainting to interpolate dark areas in the image
+# Use impainting to interpolate dark areas in the image, corresponding to the
+# contaminating black lines
 mask = coins < 0.05
 coins_inpainted = inpaint.inpaint_biharmonic(coins, mask)
 
@@ -96,7 +127,7 @@ plt.imshow(filtered_image, cmap='nipy_spectral')
 plt.title('Labelled regions (as highlighted) after removal' +
           "\nof small/non-circular regions")
 plt.axis('off')
-# Create a zoomed inset at the 7th region
+# Create a zoomed inset at the 7th region highlighting removal of small regions
 y1, x1, y2, x2 = regions[6].bbox
 add_zoomed_inset(plt.gca(), filtered_image, 10, x1-2, x2+2, y1-2, y2+2,
                  loc='lower left')
