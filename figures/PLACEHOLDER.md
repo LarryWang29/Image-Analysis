@@ -1,0 +1,1 @@
+This is a placeholder file for the figures directory; all generated figures will be stored in this directory.
