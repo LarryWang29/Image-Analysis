@@ -32,7 +32,7 @@ All results and figures included in the report can be reproduced by running rele
 To run scripts, simply run the desired file in command line:
 
 ```{Python}
-python Q1-coins.py # This will generate all figures used in the coins segmentation in Question 1
+python src/Q1-coins.py # This will generate all figures used in the coins segmentation in Question 1
 ```
 
 ## Docker Instructions
@@ -41,17 +41,23 @@ All the packages used and their versions were included in the file `environments
 To run the Python scripts inside Docker, first build the image
 
 ```
-Docker build -t IA .
+docker build -t ia .
 ```
-This would generate an image called `IA`. To deploy and run the container, run the following command:
+This would generate an image called `ia`. To deploy and run the container, run the following command:
 
 ```
-Docker run --rm -ti IA
+docker run --rm -ti ia
 ```
 This would start the process inside the container.
 
 ## Hardware Specifications
 All scripts should be runnable on most machines in less than 1 minutes; `Q3-2.py` may take slightly longer as a network is trained.
+
+## Environment
+The exact environment used for all the code development is detailed in the file `environment.yml`.
+
+## Documentation
+All functions in the repository are annotated with documentations and comments; to explicitly generate documentation, run `doxygen` inside of `docs`; this should populate `docs` with HTML and Latex documentations.
 
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first
