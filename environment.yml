@@ -204,7 +204,6 @@ dependencies:
       - cvxpy==1.5.1
       - ecos==2.0.13
       - future==1.0.0
-      - odl==1.0.0.dev0
       - osqp==0.6.7
       - packaging==24.0
       - qdldl==0.1.7.post2
