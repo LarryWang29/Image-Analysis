@@ -41,12 +41,12 @@ All the packages used and their versions were included in the file `environments
 To run the Python scripts inside Docker, first build the image
 
 ```
-Docker build -t m2 .
+Docker build -t IA .
 ```
-This would generate an image called `m2`. To deploy and run the container, run the following command:
+This would generate an image called `IA`. To deploy and run the container, run the following command:
 
 ```
-Docker run --rm -ti m2
+Docker run --rm -ti IA
 ```
 This would start the process inside the container.
 
