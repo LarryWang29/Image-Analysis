@@ -157,19 +157,23 @@ for lam in lambdas:
     # Calculate the solutions for this lambda
     x_solution_uniform = iterative_solution(uniform_fourier, L=lam)
     x_solution_random = iterative_solution(random_fourier, L=lam)
+
+    # Plot solution from random sampling and original signal
     plt.subplot(3, 2, current_plot)
     plt.stem(x_solution_random, linefmt='b--')
     plt.stem(x, linefmt='g--')
     plt.title(rf'Comparison of randomly undersampling solution and original signal, $\lambda={lam}, $' +
-              f'MSE={np.linalg.norm(x - x_solution_random).round(3)}')
+              f'Error={np.linalg.norm(x - x_solution_random).round(3)}')
     legend_elements = [Line2D([0], [0], color='b', lw=2, linestyle='--', label='Iterative Solution'),
                     Line2D([0], [0], color='g', lw=2, linestyle='--', label='Original Signal')]
     plt.legend(handles=legend_elements)
     plt.subplot(3, 2, current_plot + 1)
+
+    # Plot solution from uniform sampling and original signal
     plt.stem(x_solution_uniform, linefmt='b--')
     plt.stem(x, linefmt='g--')
     plt.title(rf'Comparison of uniform undersampling solution and original signal, $\lambda={lam}, $' +
-              f'MSE={np.linalg.norm(x - x_solution_uniform).round(3)}')
+              f'Error={np.linalg.norm(x - x_solution_uniform).round(3)}')
     legend_elements = [Line2D([0], [0], color='b', lw=2, linestyle='--', label='Iterative Solution'),
                     Line2D([0], [0], color='g', lw=2, linestyle='--', label='Original Signal')]
     plt.legend(handles=legend_elements)
